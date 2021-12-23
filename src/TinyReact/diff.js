@@ -3,6 +3,7 @@ import mountElement from "./mountElement"
 import updateNodeElement from "./updateNodeElement"
 import updateTextNode from './updateTextNode'
 import unmountNode from './unmountNode'
+import diffComponent from './diffComponent'
 
 /**
  *
@@ -14,9 +15,11 @@ import unmountNode from './unmountNode'
  */
 export default function diff(virtualDOM, container, oldDOM) {
   const oldVirtualDOM = oldDOM && oldDOM._virtualDOM
+  const oldComponent = oldVirtualDOM && oldVirtualDOM.component
+
   if (!oldDOM) {
     mountElement(virtualDOM, container)
-  } else if (virtualDOM.type !== 'function'){
+  } else if (typeof virtualDOM.type !== 'function'){
     // diff
     if (virtualDOM.type === 'text') {
       // 是文本
@@ -43,5 +46,7 @@ export default function diff(virtualDOM, container, oldDOM) {
     virtualDOM.children.forEach((child, i) => {
       diff(child, oldDOM, oldDOM.childNodes[i])
     });
+  } else if (typeof virtualDOM.type === 'function') {
+    diffComponent(virtualDOM, oldComponent, oldDOM, container)
   }
 }

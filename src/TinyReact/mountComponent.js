@@ -2,7 +2,11 @@ import isFunctionComponent from "./isFunctionComponent";
 import mountNativeElement from "./mountNativeElement";
 import isFunction from "./isFunction"
 
-export default function mountComponent (virtualDOM, container) {
+export default function mountComponent (
+  virtualDOM,
+  container,
+  oldDOM
+) {
   let nextVirtualDOM = null
   
   // 判断组件是否是类组件还是函数组件
@@ -16,9 +20,9 @@ export default function mountComponent (virtualDOM, container) {
 
   // 组件中包含函数组件
   if (isFunction(nextVirtualDOM)) {
-    mountComponent(nextVirtualDOM, container)
+    mountComponent(nextVirtualDOM, container, oldDOM)
   } else {
-    mountNativeElement(nextVirtualDOM, container)
+    mountNativeElement(nextVirtualDOM, container, oldDOM)
   }
 }
 
@@ -29,5 +33,6 @@ function buildFunctionComponent (virtualDOM) {
 function buildClassComponent (virtualDOM) {
   const component = new virtualDOM.type(virtualDOM.props || {})
   const nextVirtualDOM = component.render()
+  nextVirtualDOM.component = component
   return nextVirtualDOM
 }
